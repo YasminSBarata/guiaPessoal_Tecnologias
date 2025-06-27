@@ -124,7 +124,7 @@ Atualize o `.eslintrc.json` para integrar com o Prettier:
     "@typescript-eslint/recommended",
     "prettier"
   ],
-  "plugins": ["@typescript-eslint", "prettier"], // específico para TS
+  "plugins": ["@typescript-eslint", "prettier"], # específico para TS
 }
 ```
 🛠️ Comandos Úteis

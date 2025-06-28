@@ -310,46 +310,55 @@ Meu-projeto/
 ```
 ## 🧾 Exemplo de workflow: ci.yml
 ```yaml
-  name: Continuous Integration   # Nome do workflow na aba Actions do GitHub
+  name: Continuous Integration
 
 on:
   push:
     branches:
-      - main  #Roda a pipeline a cada push na branch main
+      - main
   pull_request:
-    branches:  
+    branches:
       - main
       - develop
-#Roda a pipeline a cada PR para main ou develop
+
 jobs:
-  build:
+  ci:
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
-        node-version: [22]  #	Permite testar com múltiplas versões de Node.js (aqui só 22)
+        node-version: [22]
+
     steps:
-      - uses: actions/checkout@v4 #Clona o repositório no runner do GitHub
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Install pnpm
-        uses: pnpm/action-setup@v4  #Instala o pnpm versão 9 (mais rápido e moderno)
+        uses: pnpm/action-setup@v4
         with:
           version: 9
-      - name: Use Node.js ${{matrix.node-version}}
-        uses: actions/setup-node@v4 #Instala Node.js versão 22 + cache de dependências
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install #	Instala as dependências
+        run: pnpm install --frozen-lockfile
 
       - name: Check formatting
-        run: pnpm run format:fix  #Corrige automaticamente formatações com Prettier
+        run: pnpm run prettier:check
 
-      - name: Lint
-        run: pnpm run lint  #Roda ESLint para checar boas práticas e erros
+      - name: Lint code
+        run: pnpm run lint
 
-      - name: Run build
-        run: pnpm build #Garante que o projeto é compilável
+      - name: Type check
+        run: pnpm run type-check
+
+      - name: Build project
+        run: pnpm run build
+
 ```
 ### 🧠 Scripts esperados no package.json
 

@@ -103,24 +103,14 @@ Crie o arquivo `.prettierrc` na raiz do projeto:
   "plugins": ["prettier-plugin-tailwindcss"]
 }
 ```
-📝 Arquivo `.prettierignore`
-```
-node_modules/
-.next/
-out/
-dist/
-build/
-*.min.js
-*.min.css
-```
 🔄 Integração ESLint + Prettier
 
 Atualize o `eslint.config.mjs` para integrar com o Prettier:
 
 ```js
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { FlatCompat } from '@eslint/eslintrc';
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+import { FlatCompat } from "@eslint/eslintrc";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -129,35 +119,69 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
-export default [
-  ...compat.extends(
-    'next/core-web-vitals',
-    'next/typescript',
-    '@typescript-eslint/recommended',
-    'prettier'
-  ),
+const eslintConfig = [
+  ...compat.extends("next/core-web-vitals"),
+  ...compat.extends("prettier"), // Desabilita regras que conflitam com Prettier
   {
     plugins: {
-      '@typescript-eslint': require('@typescript-eslint/eslint-plugin'),
-      prettier: require('eslint-plugin-prettier'),
+      prettier: (await import("eslint-plugin-prettier")).default,
     },
     rules: {
-      'prettier/prettier': 'error', // Marca erros de formatação
+      "prettier/prettier": "error", // Mostra erros do Prettier como erros do ESLint
+      // Suas regras personalizadas aqui
     },
   },
 ];
 
-```
-🧪 Testar se está funcionando
-Crie um arquivo mal formatado propositalmente, e rode:
-```bash
-pnpm lint
-```
-Se o Prettier estiver bem integrado, ele indicará erros de formatação com mensagens como:
+export default eslintConfig;
 
-```javascript
-[prettier/prettier] Replace `...` with `...`
 ```
+✅ Adicionar scripts no `package.json`
+
+Adicione ou atualize os scripts no seu `package.json`:
+```json
+{
+  "scripts": {
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "prettier": "prettier --write .",
+    "prettier:check": "prettier --check .",
+    "format": "prettier --write . && next lint --fix"
+  }
+}
+```
+📝 Criar arquivo `.prettierignore`
+
+Crie um `.prettierignore` para excluir arquivos que não devem ser formatados:
+```
+node_modules
+.next
+out
+dist
+build
+*.min.js
+*.min.css
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+```
+
+🧪 Testar se está funcionando
+
+```bash
+# Verificar se o ESLint está funcionando
+pnpm lint
+
+# Verificar se o Prettier está funcionando
+pnpm prettier:check
+```
+🛠️ Comandos Úteis
+- pnpm lint - Verifica problemas de linting
+- pnpm prettier - Formata todos os arquivos
+- pnpm format - Formata e corrige problemas de linting
+- pnpm prettier:check - Verifica se os arquivos estão formatados corretamente
+
+
 
 ### 🔹 Tailwind CSS
 Framework utilitário para estilização. Permite aplicar estilos diretamente no HTML/JSX com classes como `flex`, `p-4`, `bg-blue-500`, etc.

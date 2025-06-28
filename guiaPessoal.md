@@ -86,7 +86,7 @@ Já o Prettier é um formatador de código que:
 
 📦 Instalação
 ```bash
-pnpm add -D prettier eslint-config-prettier eslint-plugin-prettier
+pnpm add -D prettier eslint-config-prettier eslint-plugin-prettier prettier-plugin-tailwindcss
 ```
 🔧 Configuração no `.prettierrc`
 

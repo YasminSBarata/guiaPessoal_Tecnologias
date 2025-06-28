@@ -121,7 +121,10 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals"),
-  ...compat.extends("prettier"), // Desabilita regras que conflitam com Prettier
+  ...compat.extends("next/typescript"),
+  ...compat.extends("next"),
+  ...compat.extends("plugin:storybook/recommended"), // se for usar storybook
+  ...compat.extends("prettier"), // Deve ser o último para desabilitar regras conflitantes
   {
     plugins: {
       prettier: (await import("eslint-plugin-prettier")).default,
@@ -134,7 +137,6 @@ const eslintConfig = [
 ];
 
 export default eslintConfig;
-
 ```
 ✅ Adicionar scripts no `package.json`
 

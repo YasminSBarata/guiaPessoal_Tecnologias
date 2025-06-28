@@ -105,38 +105,19 @@ Crie o arquivo `.prettierrc` na raiz do projeto:
 ```
 🔄 Integração ESLint + Prettier
 
-Atualize o `eslint.config.mjs` para integrar com o Prettier:
+Atualize o `.eslintrc.json` para integrar com o Prettier:
 
 ```js
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
-
-const eslintConfig = [
-  ...compat.extends("next/core-web-vitals"),
-  ...compat.extends("next/typescript"),
-  ...compat.extends("next"),
-  ...compat.extends("plugin:storybook/recommended"), // se for usar storybook
-  ...compat.extends("prettier"), // Deve ser o último para desabilitar regras conflitantes
-  {
-    plugins: {
-      prettier: (await import("eslint-plugin-prettier")).default,
-    },
-    rules: {
-      "prettier/prettier": "error", // Mostra erros do Prettier como erros do ESLint
-      // Suas regras personalizadas aqui
-    },
-  },
-];
-
-export default eslintConfig;
+{
+    "extends": [
+      "next/core-web-vitals",
+      "next/typescript",
+      "next",
+      "prettier",
+      "plugin:storybook/recommended"
+    ]
+  }
+  
 ```
 ✅ Adicionar scripts no `package.json`
 

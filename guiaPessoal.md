@@ -115,28 +115,48 @@ build/
 ```
 🔄 Integração ESLint + Prettier
 
-Atualize o `.eslintrc.json` para integrar com o Prettier:
-```json
-{
-  "extends": [
-    "next/core-web-vitals",
-    "next/typescript",
-    "@typescript-eslint/recommended",
-    "prettier"
-  ],
-  "plugins": ["@typescript-eslint", "prettier"], # específico para TS
-}
+Atualize o `eslint.config.mjs` para integrar com o Prettier:
+
+```js
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { FlatCompat } from '@eslint/eslintrc';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+});
+
+export default [
+  ...compat.extends(
+    'next/core-web-vitals',
+    'next/typescript',
+    '@typescript-eslint/recommended',
+    'prettier'
+  ),
+  {
+    plugins: {
+      '@typescript-eslint': require('@typescript-eslint/eslint-plugin'),
+      prettier: require('eslint-plugin-prettier'),
+    },
+    rules: {
+      'prettier/prettier': 'error', // Marca erros de formatação
+    },
+  },
+];
+
 ```
-🛠️ Comandos Úteis
+🧪 Testar se está funcionando
+Crie um arquivo mal formatado propositalmente, e rode:
 ```bash
-# Formatar todos os arquivos
-pnpm format
+pnpm lint
+```
+Se o Prettier estiver bem integrado, ele indicará erros de formatação com mensagens como:
 
-# Verificar se está formatado
-pnpm format:check
-
-# Formatar arquivo específico
-pnpm prettier --write src/components/Header.tsx
+```javascript
+[prettier/prettier] Replace `...` with `...`
 ```
 
 ### 🔹 Tailwind CSS

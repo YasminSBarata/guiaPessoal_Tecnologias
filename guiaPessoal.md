@@ -231,7 +231,7 @@ O **Storybook** é uma ferramenta de desenvolvimento isolado de componentes. Ele
 Execute no terminal:
 
 ```bash
-pnpm dlx storybook@latest init
+pnpm dlx storybook@8.3.0 init
 ```
 🔹 Durante a instalação, selecione:
 - React como framework;
@@ -248,46 +248,56 @@ pnpm add -D tailwindcss postcss autoprefixer
 ```
 - Crie ou edite o arquivo `preview.ts`:
 ```ts
-// .storybook/preview.ts
+import '../src/app/globals.css';
 
-import '../src/styles/globals.css'; // importa Tailwind
-
-export const parameters = {
-  actions: { argTypesRegex: '^on[A-Z].*' },
-  controls: {
-    matchers: {
-      color: /(background|color)$/i,
-      date: /Date$/,
+const preview = {
+  parameters: {
+    controls: {
+      matchers: {
+        color: /(background|color)$/i,
+        date: /Date$/i,
+      },
     },
   },
-};
+} as const;
+
+export default preview;
+
 ```
-- Edite o main.ts do Storybook para suportar alias `@/` e arquivos `.ts/.tsx`:
+- Edite o `main.ts` do Storybook para suportar alias `@/`:
 ```ts
 // .storybook/main.ts
 
 import type { StorybookConfig } from '@storybook/nextjs';
+import path from 'path';
 
 const config: StorybookConfig = {
-  stories: ['../src/**/*.stories.@(ts|tsx|js|jsx|mdx)'],
+  stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
   addons: [
+    '@storybook/addon-onboarding',
     '@storybook/addon-links',
     '@storybook/addon-essentials',
+    '@chromatic-com/storybook',
     '@storybook/addon-interactions',
   ],
   framework: {
     name: '@storybook/nextjs',
     options: {},
   },
+  staticDirs: ['..\\public'],
   webpackFinal: async (config) => {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@': require('path').resolve(__dirname, '../src'),
-    };
+    if (config.resolve) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@': path.resolve(__dirname, '../src'),
+      }; //Agora você pode usar importações como import { Button } from '@/components/Button' nas suas stories, igual como faz no Next.js.
+    }
     return config;
   },
 };
+
 export default config;
+
 ```
 ### ▶️ Rodando o Storybook
 ```bash
